@@ -1,35 +1,28 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+function App() {  // 定義的一個元件（component） 函式 = 元件
+  const [file, setFile] = useState(null); //呼叫useState後回傳 [狀態變數, 修改它的函式]
+  // file variable : 目前選到的檔案（狀態值）(初始null)  setFile自取 觸發畫面更新
 
-function App() {
-  const [count, setCount] = useState(0)
+  return (   // using JSX to describe UI
+    <div style={{ padding: "50px" }}> 
+      <h1>Upload to S3</h1>  
 
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+      <input          // 一個標籤   一個 React element
+        type="file"   //  HTML:attribute  JSX:prop (property，屬性)
+        onChange={(e) => setFile(e.target.files[0])}
+        //   選檔 ->onChange 觸發 ->React捕捉change事件 ->React呼叫箭頭函式
+        //   e:event object整個事件 被作為參數送進函式 -> 執行函式   沒有e=沒參數
+      /> 
+      
+      <button 
+        style={{ display: "block", marginTop: "10px" }} 
+        onClick={() => console.log("Upload Clicked")}
+      >
+        Upload
+      </button>
+
+      <pre id="output"></pre> 暫時放輸出的容器（之後會把它改成用 state 控制）
+    </div>
+  );
 }
-
 export default App
