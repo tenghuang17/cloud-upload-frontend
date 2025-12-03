@@ -1,4 +1,8 @@
 import { useState } from 'react'
+
+const API_KEY = import.meta.env.VITE_API_KEY;  
+const BACKEND_URL = "https://cloud-upload-backend.onrender.com";
+
 function App() {  // 定義的一個元件（component） 函式 = 元件
   const [file, setFile] = useState(null); //呼叫useState後回傳 [狀態變數, 修改它的函式]
   // file variable : 目前選到的檔案（狀態值）(初始null) setFile自取名 會觸發畫面更新
@@ -6,11 +10,11 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
 
 
   async function getSignedUrl(file){
-    const res = await fetch("http://localhost:5000/get_URL", {
+    const res = await fetch(BACKEND_URL, {
       method: "POST",   // res 代表整個http response
       headers: {
         "Content-Type": "application/json",
-        "Authorization": "Bearer abc123"
+        "Authorization": "Bearer ${API_KEY}"
       },
       body: JSON.stringify({
         filename: file.name,
