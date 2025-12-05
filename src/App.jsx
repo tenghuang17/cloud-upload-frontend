@@ -5,8 +5,8 @@ const BACKEND_URL = "https://cloud-upload-backend.onrender.com/get_URL";
 function App() {  // 定義的一個元件（component） 函式 = 元件
   const [file, setFile] = useState(null); //呼叫useState後回傳 [狀態變數, 修改它的函式]
   // file variable : 目前選到的檔案（狀態值）(初始null) setFile自取名 會觸發畫面更新
-  const [result, setResult] = useState("");
-
+  const [urlResult, seturlResult] = useState("");
+  const [uploadResult, setuploadResult] = useState("");
 
   async function getSignedUrl(file){
     const res = await fetch(BACKEND_URL, {
@@ -33,7 +33,26 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
       return ;
     }
     const signed = await getSignedUrl(file);     // signed json object  (like dictionary)
-    setResult(JSON.stringify(signed, null, 2));  // pre 只能顯示字串 不能顯示物件 
+    const uploadUrl = signed.presigned_url;
+    seturlResult(
+      `presigned url: ${uploadUrl}\nexpired in: 1000 seconds\n`
+    ); // pre 只能顯示字串 不能顯示物件 
+    const putRes = await fetch(uploadUrl, {
+      method: "PUT",
+      headers: {
+        "Content-Type": file.type || "application/octet-stream"
+      },
+      body: file
+    });
+
+    if (!putRes.ok) {
+      alert("Upload failed: " + putRes.status);
+      return;
+    }
+    
+    setuploadResult(
+      `Upload success!\nS3 Key: ${signed.key}\nPublic URL (if your bucket allows): https://your-bucket.s3.amazonaws.com/${signed.key}`
+    ); // pre 只能顯示字串 不能顯示物件 
   }                                             
 
 
@@ -52,10 +71,11 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
         style={{ display: "block", marginTop: "10px" }} 
         onClick={handleUpload}
       >
-        Get signed URL 
+        Start! 
       </button>
 
-      <pre>{result}</pre> 
+      <pre>{urlResult}</pre> 
+      <pre>{uploadResult}</pre>
     </div>
   );
 }
