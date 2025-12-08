@@ -42,7 +42,7 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     const uploadUrl = signed.presigned_url;
     seturlResult(
       `presigned url: ${uploadUrl}\nexpired in: 120 seconds\n`
-    ); // pre 只能顯示字串 不能顯示物件 
+    );
     const putRes = await fetch(uploadUrl, {
       method: "PUT",
       headers: {
@@ -54,17 +54,26 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
       alert("Upload failed: " + putRes.status);
       return;
     }
-
     setuploadResult(
       `Upload success!\nS3 Key: ${signed.key}\nPublic URL (if your bucket allows): https://your-bucket.s3.amazonaws.com/${signed.key}`
     ); // pre 只能顯示字串 不能顯示物件 
+    const notiRes = await fetch(" https://cloud-upload-backend.onrender.com/upload-success", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        filename: file.name,     // 或你存到 S3 的 key
+        //key: s3Key,              // 如果有加資料夾就放這裡
+        bucket: "upload-demo-nick"
+      })
+    })
+    console.log(notiRes)
   }                                             
 
 
   return (            // using JSX describe UI
     <div style={{ padding: "50px" }}> 
       <h1>Upload to S3</h1>  
-      <input          // 一個標籤 、React element
+      <input          // a tag ,  a React element
         type="file"   //  HTML:attribute  JSX:prop (property，屬性)
         onChange={(e) => setFile(e.target.files[0])}
         //   選檔 ->onChange 觸發 ->React捕捉change事件 ->React呼叫箭頭函式
