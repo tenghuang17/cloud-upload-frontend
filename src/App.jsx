@@ -57,7 +57,7 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     setuploadResult(
       `Upload success!\nS3 Key: ${signed.key}\nPublic URL (if your bucket allows): https://your-bucket.s3.amazonaws.com/${signed.key}`
     ); // pre 只能顯示字串 不能顯示物件 
-    const notiRes = await fetch(" https://cloud-upload-backend.onrender.com/upload-success", {
+    const notiRes = await fetch(" https://cloud-upload-backend.onrender.com/upload_success", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
