@@ -20,14 +20,17 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     setFile(file);
   }
 
-  function encryptXOR(text, key) {
-    let result = "";
-    for (let i = 0; i < text.length; i++) {
-      result += String.fromCharCode(
-        text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
-      );
+  function encryptXOR_UTF8(text, key) {
+    const encoder = new TextEncoder();
+    const data = encoder.encode(text); 
+    const keyData = encoder.encode(key);
+
+    const result = new Uint8Array(data.length);
+    for (let i = 0; i < data.length; i++) {
+      result[i] = data[i] ^ keyData[i % keyData.length];
     }
-    return btoa(result);   // 最後 Base64 避免 binary 直接傳輸亂碼
+
+    return btoa(String.fromCharCode(...result));
   }
 
   async function getSignedUrl(file){
@@ -68,7 +71,7 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     );
     //encrypt file content
     const content = await file.text();
-    const encrypted = encryptXOR(content, "abc123");
+    const encrypted = encryptXOR_UTF8(content, "abc123");
     const encryptedBlob = new Blob([encrypted], { type: "text/plain"}); // 內容包裝成Blob
     //  Blob : “前端中的檔案內容”，但不一定有檔名
 
