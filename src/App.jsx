@@ -20,6 +20,16 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     setFile(file);
   }
 
+  function encryptXOR(text, key) {
+    let result = "";
+    for (let i = 0; i < text.length; i++) {
+      result += String.fromCharCode(
+        text.charCodeAt(i) ^ key.charCodeAt(i % key.length)
+      );
+    }
+    return btoa(result);   // 最後 Base64 避免 binary 直接傳輸亂碼
+  }
+
   async function getSignedUrl(file){
     const res = await fetch(BACKEND_URL, {  
       method: "POST",   // res : whole http response
@@ -35,7 +45,7 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     // formData.append("file", file);
     // const res = await fetch(BACKEND_URL, {
     //   method: "POST",
-    //   body: formData      //不要自己加 Content-Type，瀏覽器會自動加 boundary
+    //   body: formData      //不自己加 Content-Type，瀏覽器會自動加 boundary
     // });
     if (!res.ok){
       throw new Error("Failed: " + res.status)
@@ -56,13 +66,19 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
     seturlResult(
       `presigned url: ${uploadUrl}\nexpired in: 120 seconds\n`
     );
-    // upload s3
+    //encrypt file content
+    const content = await file.text();
+    const encrypted = encryptXOR(content, "abc123");
+    const encryptedBlob = new Blob([encrypted], { type: "text/plain"}); // 內容包裝成Blob
+    //  Blob : “前端中的檔案內容”，但不一定有檔名
+
+    // put -> s3
     const putRes = await fetch(uploadUrl, {  
       method: "PUT",
       headers: {
         "Content-Type": file.type || "application/octet-stream"
       },
-      body: file
+      body: encryptedBlob
     });
     if (!putRes.ok) {
       alert("Upload failed: " + putRes.status);
