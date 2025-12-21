@@ -1,6 +1,6 @@
 import { useState } from 'react'
   
-const BACKEND_URL = "https://cloud-upload-backend-docker.onrender.com";
+const BACKEND_URL = "https://cloud-upload-backend-docker.onrender.com/get_URL";
 
 function App() {  // 定義的一個元件（component） 函式 = 元件
   const [file, setFile] = useState(null); //呼叫useState後回傳 [狀態變數, 修改它的函式]
