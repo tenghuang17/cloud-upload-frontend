@@ -1,6 +1,6 @@
 import { useState } from 'react'
   
-const BACKEND_URL = "https://cloud-upload-backend.onrender.com/get_URL";
+const BACKEND_URL = "https://cloud-upload-backend-docker.onrender.com";
 
 function App() {  // 定義的一個元件（component） 函式 = 元件
   const [file, setFile] = useState(null); //呼叫useState後回傳 [狀態變數, 修改它的函式]
@@ -36,9 +36,9 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
   async function getSignedUrl(file){
     const res = await fetch(BACKEND_URL, {  
       method: "POST",   // res : whole http response
-      headers: {
-        "Content-Type": "application/json"
-      },
+      headers: {     // 就算後端沒有讀request.headers.get()也要加 
+        "Content-Type": "application/json"  //不然request.get_json 會噴錯               
+      },                        // 因為flask不知道這是不是 JSON
       body: JSON.stringify({
         filename: file.name,
         contentType: file.type || "application/octet-stream"
@@ -91,7 +91,7 @@ function App() {  // 定義的一個元件（component） 函式 = 元件
       `Upload success!\nS3 Key: ${s3_key}\nPublic URL (if your bucket allows): https://your-bucket.s3.amazonaws.com/${signed.key}`
     );
 
-    // 通知後端 上傳s3成功
+    // 通知後端 上傳s3成功   後端收到通知後才傳message to SQS
     const notiRes = await fetch(" https://cloud-upload-backend.onrender.com/upload_success", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
